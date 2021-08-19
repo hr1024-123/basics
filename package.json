@@ -4,9 +4,11 @@
   "description": "js basics",
   "main": "index.js",
   "repository": "https://github.com/hr1024-123/basics.git",
-  "author": "haoran.jing <haoran.jing@drcnet.com.cn>",
+  "author": "haoran.jing",
+  "type": "module",
   "license": "MIT",
   "devDependencies": {
+    "babel-eslint": "^10.1.0",
     "eslint": "^7.32.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.24.0"

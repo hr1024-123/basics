@@ -10,6 +10,11 @@ module.exports = {
     ecmaVersion: 12,
     sourceType: 'module',
   },
+  parser: 'babel-eslint',
   rules: {
+    'no-underscore-dangle': 0,
+    'import/extensions': 0,
+    'no-param-reassign': 0,
+    'no-use-before-define': ['error', { functions: false, classes: false }],
   },
 };

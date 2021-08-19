@@ -23,6 +23,7 @@ export default class _Promise {
   // 初始化错误队列
   onRejectedQueue = [];
 
+  // resolve回调
   resolve = (data) => {
     // 由于Promise的状态不可逆，判断是否处于pending状态
     if (this.status !== 'pending') return;
@@ -35,6 +36,7 @@ export default class _Promise {
     }
   }
 
+  // reject回调
   reject = (reason) => {
     // 由于Promise的状态不可逆，判断是否处于pending状态
     if (this.status !== 'pending') return;
@@ -91,7 +93,14 @@ export default class _Promise {
   }
 
   // catch实现就是返回了一个Promise.prototype.then(undefined, errCallback)
-  catch = (reason) => this.then(undefined, reason)
+  catch(reason) {
+    return this.then(undefined, reason);
+  }
+
+  // finally实现
+  finally(onFinally) {
+    return this.then(onFinally, onFinally);
+  }
 
   // 实现resolve的静态调用
   static resolve(params) {
@@ -110,6 +119,82 @@ export default class _Promise {
   static reject(reason) {
     return new _Promise((resolve, reject) => {
       reject(reason);
+    });
+  }
+
+  // 实现all的静态调用， 传入一个可迭代的参数
+  static all(iterable) {
+    // 合并传入的Promise
+    return new _Promise((resolve, reject) => {
+      // 传入为空时直接resolve
+      if (!iterable.length) resolve([]);
+      // 定义返回的结果数组
+      const res = [];
+      // 定义返回数组填值指针
+      let count = 0;
+
+      // 循环传入的Promise数组
+      iterable.forEach((item, index) => {
+        // 通过Promise的静态resolve调用，在then中做错误和填值
+        _Promise.resolve(item).then((data) => {
+          // 在填值后填值指针加1
+          count += 1;
+          // 在缓存的index中设置对应位置的数据
+          res[index] = data;
+          // 当填值指针与远Promise长度相等时，所有Promise返回值完成，resolve最终的值
+          if (count === iterable.length) {
+            resolve(res);
+          }
+        }, (err) => {
+          // 在整个过程中一旦出现异常，直接reject返回Promise状态
+          reject(err);
+        });
+      });
+    });
+  }
+
+  // 实现allSettled静态调用， 传入一个可迭代的参数
+  static allSettled(iterable) {
+    // 与all思路一致，但是在创建时无reject状态
+    return new _Promise((resolve) => {
+      if (!iterable.length) resolve([]);
+      const res = [];
+      let count = 0;
+
+      iterable.forEach((item, index) => {
+        _Promise.resolve(item).then((data) => {
+          count += 1;
+          // 按类型在返回结果中填入值
+          res[index] = {
+            status: 'fulfilled',
+            value: data,
+          };
+          if (count === iterable.length) {
+            resolve(res);
+          }
+        }, (err) => {
+          count += 1;
+          // 按类型在返回结果中填入值
+          res[index] = {
+            status: 'rejected',
+            value: err,
+          };
+          if (count === iterable.length) {
+            resolve(res);
+          }
+        });
+      });
+    });
+  }
+
+  // 实现race的静态调用， 传入一个可迭代的参数
+  static race(iterable) {
+    // 合并传入的Promise为单个
+    return new _Promise((resolve, reject) => {
+      iterable.forEach((item) => {
+        // 在任意优先一个执行完成的Promise直接执行比起修改当前Promise状态
+        _Promise.resolve(item).then((data) => resolve(data), (error) => reject(error));
+      });
     });
   }
 }

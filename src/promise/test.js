@@ -2,25 +2,12 @@
 
 import _Promise from './index.js';
 
-// const _Promise = Promise;
+const promise1 = () => new _Promise((res) => res(1));
 
-_Promise.resolve().then(() => {
-  console.log(0);
-  return _Promise.resolve(4);
-}).then((res) => {
-  console.log(res);
+const promise2 = () => new _Promise((res) => res(2));
+
+const promise3 = () => new _Promise((res) => res(3));
+
+_Promise.all([promise1, promise2, promise3]).then((value) => {
+  console.log(value);
 });
-
-_Promise.resolve().then(() => {
-  console.log(1);
-}).then(() => {
-  console.log(2);
-}).then(() => {
-  console.log(3);
-})
-  .then(() => {
-    console.log(5);
-  })
-  .then(() => {
-    console.log(6);
-  });

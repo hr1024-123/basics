@@ -1,4 +1,4 @@
-import clone from './index.js';
+import clone, { cloneObject } from './index.js';
 
 const map = new Map();
 
@@ -61,3 +61,5 @@ const target = {
 };
 
 console.log(clone(target));
+// 无法拷贝Symbol等类型
+console.log(cloneObject(target));

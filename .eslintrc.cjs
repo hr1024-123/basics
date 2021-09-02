@@ -15,6 +15,7 @@ module.exports = {
     'no-underscore-dangle': 0,
     'import/extensions': 0,
     'no-param-reassign': 0,
+    'no-console': 0,
     'no-use-before-define': ['error', { functions: false, classes: false }],
   },
 };
